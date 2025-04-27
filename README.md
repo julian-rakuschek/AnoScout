@@ -3,7 +3,7 @@
 
 # AnoScout
 
-[anoscout.cgv.tugraz.at](anoscout.cgv.tugraz.at)
+[anoscout.cgv.tugraz.at](https://anoscout.cgv.tugraz.at)
 
 <img alt="Teaser" src="./teaser.png" align="center" width="600" />
 
