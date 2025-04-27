@@ -1,0 +1,38 @@
+# ------------------------------
+#     Frontend Build
+# ------------------------------
+FROM node:alpine as build
+
+WORKDIR /app/web/frontend
+COPY ./frontend/package*.json ./
+RUN npm i --silent
+COPY ./frontend .
+RUN npm run build
+
+# ----------------------------
+#     Backend Build
+# ----------------------------
+FROM python:3.12-bookworm
+
+RUN apt-get update && apt-get install --no-install-suggests --no-install-recommends --yes pipx
+
+ENV PATH="/root/.local/bin:${PATH}"
+ENV PYTHONPATH="${PYTHONPATH}:/app/backend"
+WORKDIR /app
+
+RUN pipx install poetry
+RUN pipx inject poetry poetry-plugin-bundle
+
+COPY ./poetry.lock ./poetry.lock
+COPY ./pyproject.toml ./pyproject.toml
+RUN poetry install --no-root
+RUN poetry add gunicorn
+
+COPY ./backend ./backend
+COPY --from=build /app/web/frontend ./frontend
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 5000
+ENTRYPOINT ["/entrypoint.sh"]

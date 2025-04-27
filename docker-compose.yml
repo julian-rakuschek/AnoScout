@@ -1,0 +1,65 @@
+version: "3.9"
+
+services:
+  mongodb_container:
+    container_name: anoscout_mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    expose:
+      - 27017
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - anoscout
+
+  redis_container:
+    container_name: anoscout_redis
+    image: redis:latest
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - anoscout
+
+  backend:
+    container_name: anoscout_app
+    depends_on:
+      - redis_container
+      - mongodb_container
+    build:
+      context: ./
+      dockerfile: Dockerfile_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DOCKER=True
+    expose:
+      - 5000
+    networks:
+      - anoscout
+
+  scheduler:
+    container_name: anoscout_scheduler
+    depends_on:
+      - redis_container
+      - mongodb_container
+    build:
+      context: ./
+      dockerfile: Dockerfile_scheduler
+    environment:
+      - DOCKER=True
+    networks:
+      - anoscout
+
+volumes:
+  mongodb_data_container:
+  cache:
+    driver: local
+
+networks:
+  anoscout:

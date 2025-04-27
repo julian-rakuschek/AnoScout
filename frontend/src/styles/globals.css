@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.defaultIconSize {
+    @apply h-7;
+    @apply w-7;
+}
+
+@responsive {
+    .defaultInsetX {
+        @apply px-20;
+    }
+
+    .defaultInsetY {
+        @apply py-10;
+    }
+
+    .defaultInset {
+        @apply defaultInsetX;
+        @apply defaultInsetY;
+    }
+
+    @media (max-width: 750px) {
+
+        .defaultInsetX {
+            @apply px-6;
+        }
+
+        .defaultInsetY {
+            @apply py-4;
+        }
+    }
+
+    @media (max-width: 400px) {
+
+        .defaultInsetX {
+            @apply px-2;
+        }
+
+        .defaultInsetY {
+            @apply py-2;
+        }
+    }
+
+    .defaultHalfInsetX {
+        @apply px-10;
+    }
+
+    .defaultHalfInsetY {
+        @apply py-5;
+    }
+
+    .defaultHalfInset {
+        @apply defaultHalfInsetX;
+        @apply defaultHalfInsetY;
+    }
+
+    @media (max-width: 750px) {
+
+        .defaultHalfInsetX {
+            @apply px-3;
+        }
+
+        .defaultHalfInsetY {
+            @apply py-2;
+        }
+    }
+
+    @media (max-width: 400px) {
+
+        .defaultHalfInsetX {
+            @apply px-1;
+        }
+
+        .defaultHalfInsetY {
+            @apply py-1;
+        }
+    }
+}
+
+.border-animation {
+    position: relative;
+}
+
+.border-animation:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    /*border-bottom: solid 2px #4A00E0;*/
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    transition: 0.15s ease-in-out;
+}
+
+.border-animation:hover:before {
+    width: 100%;
+}
+
+.landing-page-gradient {
+    background: #0e1b40; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to top, #1c367d, #0e1b40); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to top, #1c367d, #0e1b40); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}

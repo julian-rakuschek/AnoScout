@@ -1,0 +1,173 @@
+{
+  "cache": {
+    "keys": {
+      "BASELINE_MIN_MAX": "anoscout:baseline:min_max",
+      "CLUSTERING": "anoscout:clustering",
+      "DTW": "anoscout:dtw"
+    }
+  },
+  "scheduler": {
+    "logfile": "logfile.log",
+    "logging_enabled": false,
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "keys": {
+        "ANOMALY_CALC_QUEUE": "anoscout:anomaly:queue",
+        "ANOMALY_CALC_STATUS": "anoscout:anomaly:status",
+        "ANOMALY_CALC_ERRORED": "anoscout:anomaly:errored"
+      }
+    }
+  },
+  "algorithms": {
+    "MERLIN": {
+      "name": "MERLIN",
+      "type": "scoring",
+      "weight": 1,
+      "parameters": {
+        "min_length": {
+          "type": "integer",
+          "min": 4,
+          "description": "Minimum length of the subsequence to search for. Must be at least 4.",
+          "value": 10
+        },
+        "max_length": {
+          "type": "integer",
+          "min": 5,
+          "description": "Maximum length of the subsequence to search for. Must be at half the length of the time series or less.",
+          "value": 50
+        }
+      }
+    },
+    "STOMP": {
+      "name": "STOMP",
+      "type": "scoring",
+      "weight": 1,
+      "parameters": {
+        "window_size": {
+          "type": "integer",
+          "min": 1,
+          "description": "Size of the sliding window.",
+          "value": 10
+        }
+      }
+    },
+    "DWT_MLEAD": {
+      "name": "DWT_MLEAD",
+      "type": "scoring",
+      "weight": 1,
+      "parameters": {
+        "start_level": {
+          "type": "integer",
+          "min": 0,
+          "description": "The level at which to start the anomaly detection. Must be >= 0 and less than log_2(n_timepoints).",
+          "value": 3
+        },
+        "quantile_epsilon": {
+          "type": "float",
+          "min": 0,
+          "max": 1,
+          "description": "The epsilon value for the quantile boundary. Must be in [0, 1].",
+          "value": 0.01
+        }
+      }
+    },
+    "KMeansAD": {
+      "name": "KMeansAD",
+      "type": "scoring",
+      "weight": 1,
+      "parameters": {
+        "n_clusters": {
+          "type": "integer",
+          "min": 1,
+          "description": "The number of clusters to use in the k-Means algorithm. The bigger the number of clusters, the less noisy the anomaly scores get. However, the number of clusters should not be too high, as this can lead to overfitting.",
+          "value": 20
+        },
+        "window_size": {
+          "type": "integer",
+          "min": 1,
+          "description": "The size of the sliding window used to split the time series into windows. The bigger the window size, the bigger the anomaly context is. If it is too big, however, the detector marks points anomalous that are not. If it is too small, the detector might not detect larger anomalies or contextual anomalies at all. If window_size is smaller than the anomaly, the detector might detect only the transitions between normal data and the anomalous subsequence.",
+          "value": 100
+        }
+      }
+    },
+    "LOF": {
+      "name": "LOF",
+      "type": "scoring",
+      "weight": 1,
+      "parameters": {
+        "n_neighbors": {
+          "type": "integer",
+          "min": 1,
+          "description": "Number of neighbors to use by default for kneighbors queries. If n_neighbors is larger than the number of samples provided, all samples will be used.",
+          "value": 20
+        },
+        "window_size": {
+          "type": "integer",
+          "min": 1,
+          "description": "The size of the sliding window used to split the time series into windows. The bigger the window size, the bigger the anomaly context is. If it is too big, however, the detector marks points anomalous that are not. If it is too small, the detector might not detect larger anomalies or contextual anomalies at all. If window_size is smaller than the anomaly, the detector might detect only the transitions between normal data and the anomalous subsequence.",
+          "value": 50
+        }
+      }
+    },
+    "J-K-NN": {
+      "name": "J-K-NN",
+      "type": "classification",
+      "weight": 1,
+      "parameters": {
+        "ratio_threshold": {
+          "type": "float",
+          "min": 0,
+          "description": "Threshold for the ratio between the NN distance and the 1NN distance.",
+          "value": 0.5
+        },
+        "j": {
+          "type": "integer",
+          "min": 0,
+          "description": "How many nearest neighbors for a given segment.",
+          "value": 1
+        },
+        "k": {
+          "type": "integer",
+          "min": 0,
+          "description": "How many nearest neighbors for the found nearest neighbor of a segment.",
+          "value": 1
+        },
+        "n_prototypes": {
+          "type": "integer",
+          "min": 0,
+          "description": "Number of segments that act as landmarks for the dissimilarity based representation computation.",
+          "value": 10
+        }
+      }
+    },
+    "KDE": {
+      "name": "KDE",
+      "type": "classification",
+      "weight": 1,
+      "parameters": {
+        "level": {
+          "type": "float",
+          "min": 0,
+          "max": 1,
+          "description": "Level for the KDE.",
+          "value": 0.8
+        },
+        "bandwidth": {
+          "type": "float",
+          "min": 0,
+          "description": "Bandwidth for the KDE.",
+          "value": 6
+        }
+      }
+    }
+  },
+  "anomaly_scores": {
+    "smoothing_window": 100,
+    "threshold": 0.3
+  },
+  "mongo": {
+    "url": "mongodb://localhost:27017/",
+    "db": "AnoScoutDB"
+  }
+}
